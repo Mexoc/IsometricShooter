@@ -21,12 +21,9 @@ public class PlayerMovement: MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         ground = GameObject.FindGameObjectWithTag("Ground");
         playerRigidBody = player.GetComponent<Rigidbody>();
-        //dirVert = Vector3.forward + Vector3.right;
-        //dirHor = Vector3.forward + Vector3.left;
-        dirVert = Vector3.forward;
-        dirHor = Vector3.right;
+        dirVert = Vector3.forward + Vector3.right;
+        dirHor = Vector3.forward + Vector3.left;     
         speed = 0.05f;
-        //gravity = -0.2f;
         jumpForce = 3f;
         canJump = true;
     }
@@ -34,12 +31,7 @@ public class PlayerMovement: MonoBehaviour
     private void Update()
     {
         PlayerMove();
-        PlayerCursorLook();
-    }
-
-    private void FixedUpdate()
-    {
-        PlayerJump();
+        PlayerSprint();
     }
 
     private void PlayerMove()
@@ -48,36 +40,25 @@ public class PlayerMovement: MonoBehaviour
         vertical = Input.GetAxis("Vertical");
         if (horizontal != 0)
         {
-            player.transform.Translate(horizontal * dirHor * speed);
+            player.transform.Translate(-horizontal * dirHor * speed);
         }
         if (vertical != 0)
         {
             player.transform.Translate(vertical * dirVert * speed);
         }
         player.transform.Translate(0, gravity, 0);
-    }
+    } 
 
-    private void PlayerJump()
-    {        
-        if (canJump)
+    private void PlayerSprint()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if (Input.GetKey(KeyCode.Space))
-            {
-                playerRigidBody.AddForce(0, jumpForce, 0, ForceMode.Impulse);
-            }
-        }        
-    }    
-
-    private void PlayerCursorLook()
-    {       
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
+            speed += 0.05f;
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            if (hit.collider.gameObject.tag == "Ground")
-            {
-                player.transform.LookAt(hit.point);                
-            }
+            speed -= 0.05f;
         }
     }
+    
 }
